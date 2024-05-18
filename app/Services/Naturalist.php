@@ -54,4 +54,29 @@ class Naturalist
 
         return collect($response->json('results'));
     }
+
+    public function getEmojiForIconicTaxa(string $iconicTaxa) : string
+    {
+        $table = [
+            'Plantae' => '🌴',
+            'Aves' => '🦜',
+            'Insecta' => '🪲',
+            'Arachnida' => '🕷️',
+            'Fungi' => '🍄',
+            'Mammalia' => '🦨',
+            'Amphibia' => '🐸',
+            'Reptilia' => '🦎',
+            'Animalia' => '🪼',
+            'Mollusca' => '🐌',
+            'Actinopterygii' => '🐟',
+            'Protozoa' => '🧬',
+            'Chromista' => '🦠',
+        ];
+
+        if (!isset($table[$iconicTaxa])) {
+            return '';
+        }
+
+        return $table[$iconicTaxa];
+    }
 }
