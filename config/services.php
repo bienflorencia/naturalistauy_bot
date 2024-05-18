@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'tacuruses' => [
+        'naturalista' => [
+            'host' => env('NATURALISTA_API_HOST', ''),
+            'apikey' => env('NATURALISTA_API_KEY', ''),
+        ]
+    ]
 ];
