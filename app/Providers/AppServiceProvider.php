@@ -18,6 +18,11 @@ class AppServiceProvider extends ServiceProvider
             $api = new Tacuruses($app->config->get('services.tacuruses.naturalista.host'), $app->config->get('services.tacuruses.naturalista.apikey'));
             return $command->handle(fediApi: $api, natuApi: $app->make(Naturalist::class));
         });
+
+        $this->app->bindMethod('App\Console\Commands\TopIdentifiers@handle', function ($command, $app) {
+            $api = new Tacuruses($app->config->get('services.tacuruses.naturalista.host'), $app->config->get('services.tacuruses.naturalista.apikey'));
+            return $command->handle(fediApi: $api, natuApi: $app->make(Naturalist::class));
+        });
     }
 
     /**
