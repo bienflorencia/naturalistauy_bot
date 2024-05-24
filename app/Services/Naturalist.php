@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
@@ -24,6 +23,7 @@ class Naturalist
         $params = [
             'place_id' => $placeId,
             'taxon_id' => implode(',', $taxonIds),
+            'per_page' => 500,
         ];
 
         $response = Http::get($url, $params);
@@ -48,6 +48,26 @@ class Naturalist
             'quality_grade' => 'research',
             'locale' => 'es-AR',
             'preferred_place_id' => $placeId,
+            'per_page' => 200,
+        ];
+
+        $response = Http::get($url, $params);
+
+        return collect($response->json('results'));
+    }
+
+    public function getTopIdentifiers(string $from, string $to, int $taxonId, int $placeId = 7259)
+    {
+
+        $url = self::BASE_URL . '/v1/identifications/identifiers';
+        $params = [
+            'own_observation' => false,
+            'place_id' => $placeId,
+            'iconic_taxon_id' => $taxonId,
+            'd1' => $from,
+            'd2' => $to,
+            'order' => 'desc',
+            'per_page' => 5,
         ];
 
         $response = Http::get($url, $params);
@@ -71,6 +91,56 @@ class Naturalist
             'Actinopterygii' => '🐟',
             'Protozoa' => '🧬',
             'Chromista' => '🦠',
+        ];
+
+        if (!isset($table[$iconicTaxa])) {
+            return '';
+        }
+
+        return $table[$iconicTaxa];
+    }
+
+    public function getNameForIconicTaxaId(int $taxaId) : string
+    {
+        $table = [
+            1 => 'Animalia',
+            3 => 'Aves',
+            47126 => 'Plantae',
+            47158 => 'Insecta',
+            47119 => 'Arachnida',
+            47170 => 'Fungi',
+            40151 => 'Mammalia',
+            20978 => 'Amphibia',
+            26036 => 'Reptilia',
+            47115 => 'Mollusca',
+            47178 => 'Actinopterygii',
+            47686 => 'Protozoa ',
+            48222 => 'Chromista',
+        ];
+
+        if (!isset($table[$taxaId])) {
+            return '';
+        }
+
+        return $table[$taxaId];
+    }
+
+    public function getCommonNameForIconicTaxa(string $iconicTaxa) : string
+    {
+        $table = [
+            'Plantae' => 'plantas',
+            'Aves' => 'aves',
+            'Insecta' => 'insectos',
+            'Arachnida' => 'arácnidos',
+            'Fungi' => 'hongos',
+            'Mammalia' => 'mamíferos',
+            'Amphibia' => 'anfibios',
+            'Reptilia' => 'reptiles',
+            'Animalia' => 'otros animales',
+            'Mollusca' => 'moluscos',
+            'Actinopterygii' => 'peces con aletas radiadas',
+            'Protozoa' => 'protozoarios',
+            'Chromista' => 'algas pardas',
         ];
 
         if (!isset($table[$iconicTaxa])) {
