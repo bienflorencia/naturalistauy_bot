@@ -65,13 +65,15 @@ class CheckOnDate extends Command
 
         // Introducción
         $message = "<p><a href=\"{$mostRare['url']}\">Registro del día en 🇺🇾</a><br>";
-        $message .= 'Esta fue la especie con menos observaciones registradas en Uruguay en el día de ayer:<br><br><b>';
+        $message .= 'Esta fue la especie con menos observaciones registradas en Uruguay el ' .
+            $date->locale('es_UY')->isoFormat('dddd [pasado]') .
+            ' (' . $date->format('Y-m-d') . '):<br><br><b>';
 
         // Nombre de especie
         if (!empty($mostRare['common_name'])) {
-            $message .= "{$mostRare['common_name']} ({$mostRare['taxon_name']}), ";
+            $message .= "{$mostRare['common_name']} (<i>{$mostRare['taxon_name']}</i>), ";
         } else {
-            $message .= "{$mostRare['taxon_name']}, ";
+            $message .= "<i>{$mostRare['taxon_name']}</i>, ";
         }
         $message .= $mostRare['iconic_taxa'] . ' ' . $natuApi->getEmojiForIconicTaxa($mostRare['iconic_taxa']) . '.</b><br><br>';
 
