@@ -17,17 +17,17 @@ class Naturalist
         //
     }
 
-    public function getTaxonCount(array $taxonIds, int $placeId = 7259): Collection
+    public function getTaxonCount(array $taxonIds, ?int $placeId = 7259): Collection
     {
         $url = self::BASE_URL . '/v1/observations/species_counts';
         $params = [
             'place_id' => $placeId,
             'taxon_id' => implode(',', $taxonIds),
             'per_page' => 500,
+            'verifiable' => true,
+            'quality_grade' => 'research',
         ];
-
         $response = Http::get($url, $params);
-
         return collect($response->json('results'));
     }
 
@@ -114,7 +114,7 @@ class Naturalist
             26036 => 'Reptilia',
             47115 => 'Mollusca',
             47178 => 'Actinopterygii',
-            47686 => 'Protozoa ',
+            47686 => 'Protozoa',
             48222 => 'Chromista',
         ];
 

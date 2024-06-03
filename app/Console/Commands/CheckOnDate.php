@@ -52,16 +52,24 @@ class CheckOnDate extends Command
             ]);
 
         // Get the count for each of the taxons
-        $observationsCount = $natuApi->getTaxonCount(
+        $observationsCountOnPlace = $natuApi->getTaxonCount(
             $observationsOnDate->pluck('taxon_id')->toArray()
         )->map(fn (array $observation) => [
             'taxon_id' => Arr::get($observation, 'taxon.id'),
             'count_natUY' => Arr::get($observation, 'count', 0),
-            'count_iNat' => Arr::get($observation, 'taxon.observations_count', 0),
         ])->sortBy('count_natUY');
 
-        $observationCountMostRare = $observationsCount->first();
-        $mostRare = $observationsOnDate->firstWhere('taxon_id', '=', $observationCountMostRare['taxon_id']);
+        $observationsCountOnPlatform = $natuApi->getTaxonCount(
+            $observationsOnDate->pluck('taxon_id')->toArray(), null
+        )->map(fn (array $observation) => [
+            'taxon_id' => Arr::get($observation, 'taxon.id'),
+            'count_iNat' => Arr::get($observation, 'count', 0),
+        ])->sortBy('count_iNat');
+
+        $observationMostRareCountOnPlace = $observationsCountOnPlace->first();
+        $observationMostRareCountOnPlatform = $observationsCountOnPlatform->first();
+
+        $mostRare = $observationsOnDate->firstWhere('taxon_id', '=', $observationMostRareCountOnPlace['taxon_id']);
 
         // Introducción
         $message = "<p><a href=\"{$mostRare['url']}\">Registro del día en 🇺🇾</a><br>";
@@ -100,29 +108,26 @@ class CheckOnDate extends Command
         }
 
         // Info del número de registros
-        if ($observationCountMostRare['count_natUY'] === 1) {
+        if ($observationMostRareCountOnPlace['count_natUY'] === 1) {
             $message .= '<b>¡es la primera vez que se registra en el país';
-            if ($observationCountMostRare['count_iNat'] === 1) {
+            if ($observationMostRareCountOnPlatform['count_iNat'] === 1) {
                 // primera vez en Uruguay en el mundo
                 $message .= ' y en el mundo';
-            } elseif ($observationCountMostRare['count_iNat'] > 1) {
+            } elseif ($observationMostRareCountOnPlatform['count_iNat'] > 1) {
                 // primera vez en Uruguay pero no en el mundo
-                $message .= '</b> (aunque se registró ' . $observationCountMostRare['count_iNat'] . ' veces en el resto del mundo)!';
+                $message .= '</b> (aunque se registró ' . $observationMostRareCountOnPlatform['count_iNat'] . ' veces en el resto del mundo)!';
             } else {
                 // no debería pasar pero ¯\_(ツ)_/¯
                 $message .= '!</b>';
             }
         } else {
-            $message .= 'ha sido registrada ' . $observationCountMostRare['count_natUY'];
-            $message .= ' ' . Str::plural('vez', $observationCountMostRare['count_natUY']) . ' en el país';
-            if ($observationCountMostRare['count_iNat'] > 0) {
-                $message .= ' y ' . $observationCountMostRare['count_iNat'] . ' ' . Str::plural('vez', $observationCountMostRare['count_iNat']) . ' en el mundo';
+            $message .= 'ha sido registrada ' . $observationMostRareCountOnPlace['count_natUY'];
+            $message .= ' ' . Str::plural('vez', $observationMostRareCountOnPlace['count_natUY']) . ' en el país';
+            if ($observationMostRareCountOnPlatform['count_iNat'] > 0) {
+                $message .= ' y ' . $observationMostRareCountOnPlatform['count_iNat'] . ' ' . Str::plural('vez', $observationMostRareCountOnPlatform['count_iNat']) . ' en el mundo';
                 $message .= '.</p>';
             }
         }
-
-
-
 
         if ($this->option('dry-run')) {
             $this->info(str_replace('<br>', PHP_EOL, $message));
