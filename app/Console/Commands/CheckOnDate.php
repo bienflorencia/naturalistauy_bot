@@ -128,9 +128,11 @@ class CheckOnDate extends Command
             $message .= ' ' . Str::plural('vez', $countPlace) . ' en el país';
             if ($countWorld > 0) {
                 $message .= ' y ' . $countWorld . ' ' . Str::plural('vez', $countWorld) . ' en el resto del mundo';
-                $message .= '.</p>';
             }
+            $message .= '.';
         }
+        $message .= '</p>';
+
 
         if ($this->option('dry-run')) {
             $this->info(str_replace('<br>', PHP_EOL, $message));
