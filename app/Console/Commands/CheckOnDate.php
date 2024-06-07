@@ -59,16 +59,16 @@ class CheckOnDate extends Command
             'count_natUY' => Arr::get($observation, 'count', 0),
         ])->sortBy('count_natUY');
 
-        $observationsCountOnPlatform = $natuApi->getTaxonCount(
-            $observationsOnDate->pluck('taxon_id')->toArray(),
+        $observationMostRareCountOnPlace = $observationsCountOnPlace->first();
+
+        $observationMostRareCountOnPlatform = $natuApi->getTaxonCount(
+            [$observationMostRareCountOnPlace['taxon_id']],
             null
         )->map(fn (array $observation) => [
             'taxon_id' => Arr::get($observation, 'taxon.id'),
             'count_iNat' => Arr::get($observation, 'count', 0),
-        ])->sortBy('count_iNat');
+        ])->first();
 
-        $observationMostRareCountOnPlace = $observationsCountOnPlace->first();
-        $observationMostRareCountOnPlatform = $observationsCountOnPlatform->first();
         $mostRare = $observationsOnDate->firstWhere('taxon_id', '=', $observationMostRareCountOnPlace['taxon_id']);
 
         $countPlace = $observationMostRareCountOnPlace['count_natUY'];
