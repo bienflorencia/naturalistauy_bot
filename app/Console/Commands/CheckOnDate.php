@@ -112,22 +112,34 @@ class CheckOnDate extends Command
 
         // Info del número de registros
         if ($countPlace === 1) {
-            $message .= '<b>¡es la primera vez que se registra en el país';
-            if ($countWorld === 0) {
-                // primera vez en Uruguay en el mundo
-                $message .= ' y en el mundo';
-            } elseif ($countWorld >= 1) {
-                // primera vez en Uruguay pero no en el mundo
-                $message .= '</b> (aunque se registró ' . $countWorld . ' ' . Str::plural('vez', $countWorld) . ' en el resto del mundo)!';
+            if ($mostRare['introduced']) {
+                $message .= 'hasta ahora no tenía registros en el país';
+                if ($countWorld === 0) {
+                    // primera vez en Uruguay en el mundo
+                    $message .= ' (¡ni en el mundo! 😲)';
+                } elseif ($countWorld >= 1) {
+                    // primera vez en Uruguay pero no en el mundo
+                    $message .= ' (aunque se registró ' . $countWorld . ' ' . Str::plural('vez', $countWorld) . ' en el resto del mundo)';
+                }
             } else {
-                // no debería pasar pero ¯\_(ツ)_/¯
-                $message .= '!</b>';
+                $message .= '<b>¡es la primera vez que se registra en el país';
+                if ($countWorld === 0) {
+                    // primera vez en Uruguay en el mundo
+                    $message .= ' y en el mundo';
+                } elseif ($countWorld >= 1) {
+                    // primera vez en Uruguay pero no en el mundo
+                    $message .= '</b> (aunque se registró ' . $countWorld . ' ' . Str::plural('vez', $countWorld) . ' en el resto del mundo)!';
+                } else {
+                    // no debería pasar pero ¯\_(ツ)_/¯
+                    $message .= '!</b>';
+                }
             }
+
         } else {
             $message .= 'ha sido registrada ' . $countPlace;
             $message .= ' ' . Str::plural('vez', $countPlace) . ' en el país';
             if ($countWorld > 0) {
-                $message .= ' y ' . $countWorld . ' ' . Str::plural('vez', $countWorld) . ' en el resto del mundo';
+                $message .= ' y ' . $countWorld . ' ' . Str::plural('vez', $countWorld) . ' más en el resto del mundo';
             } else {
                 $message .= ' y no tiene registros afuera de Uruguay.';
             }
