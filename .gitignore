@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 .directory
 deploy.php
+.php-cs-fixer.cache
+storage/phpstan-cache
