@@ -1,5 +1,8 @@
 <?php
 
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
+
+
 $finder = PhpCsFixer\Finder::create()
     ->exclude('storage')
     ->exclude('node_modules')
@@ -15,6 +18,7 @@ $finder = PhpCsFixer\Finder::create()
 
 $config = new PhpCsFixer\Config();
 return $config
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules([
