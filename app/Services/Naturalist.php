@@ -17,7 +17,7 @@ class Naturalist
         //
     }
 
-    public function getTaxonCount(array $taxonIds, ?int $placeId = 7259): Collection
+    public function getTaxonCount(array $taxonIds, ?int $placeId): Collection
     {
         $url = self::BASE_URL . '/v1/observations/species_counts';
         $params = [
