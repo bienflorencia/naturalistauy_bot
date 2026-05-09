@@ -6,6 +6,7 @@ use App\Services\Naturalist;
 use App\Services\Tacuruses;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class TopIdentifiers extends Command
 {
@@ -43,21 +44,21 @@ class TopIdentifiers extends Command
         $emoji = $natuApi->getEmojiForIconicTaxa($taxaName);
 
         $message = "<p>Top identificadores de la última semana para <b>$commonName</b> $emoji";
-        $message .= ":</p><ol>";
+        $message .= ':</p><ol>';
 
         $medals = ['🥇', '🥈', '🥉', '', ''];
 
-        $top->take(5)->each(function(array $user, $index) use (&$message, $medals) {
+        $top->take(5)->each(function (array $user, $index) use (&$message, $medals) {
             $message .= "<li>{$medals[$index]}";
             if (!empty($user['user']['name'])) {
                 $message .= "{$user['user']['name']} <a href=\"https://www.naturalista.uy/people/{$user['user']['login']}\">({$user['user']['login']})";
             } else {
                 $message .= "<a href=\"https://www.naturalista.uy/people/{$user['user']['login']}\">" . $user['user']['login'];
             }
-            $message .= "</a> {$user['count']} identificaciones.</li>";
+            $message .= "</a> {$user['count']} " . Str::plural('identificación', $user['count']) . '.</li>';
         });
 
-        $message .= "</ol>";
+        $message .= '</ol>';
 
         if ($this->option('dry-run')) {
             $this->info(str_replace('<br>', PHP_EOL, $message));
